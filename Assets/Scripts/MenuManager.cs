@@ -48,6 +48,10 @@ public class MenuManager : MonoBehaviour
         {
             GameObject button = Instantiate(sessionSelectButtonPrefab, menuModal);
             button.GetComponentInChildren<Text>().text = fileLink.Key;
+            button.GetComponent<Button>().onClick.AddListener(() =>
+            {
+                GetComponent<SessionManager>().StartSession(fileLink.Value);
+            });
         }
     }
 

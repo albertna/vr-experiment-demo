@@ -7,6 +7,9 @@ using Newtonsoft.Json;
 
 public class MenuManager : MonoBehaviour
 {
+    [Tooltip("A comma-separated list of sort keys. Valid keys are 'createdTime', 'folder', 'modifiedByMeTime', 'modifiedTime', 'name', 'name_natural', 'quotaBytesUsed', 'recency', 'sharedWithMeTime', 'starred', and 'viewedByMeTime'.")]
+    // See more at https://developers.google.com/drive/api/reference/rest/v3/files/list
+    [SerializeField] string orderSessionsBy;
     [SerializeField] string googleDriveFolderID;
     [SerializeField] string googleAPIKey;
     [SerializeField] Transform menuModal;
@@ -19,12 +22,6 @@ public class MenuManager : MonoBehaviour
     void Start()
     {
         Refresh();
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     public void Refresh()
@@ -52,13 +49,15 @@ public class MenuManager : MonoBehaviour
             GameObject button = Instantiate(sessionSelectButtonPrefab, menuModal);
             button.GetComponentInChildren<Text>().text = fileLink.Key;
         }
-
     }
+
 
     IEnumerator GetFilesList()
     {
-        // form url that retrieves file IDs & names in the Google Drive folder and make the GET request
-        string fileListUrl = $"https://www.googleapis.com/drive/v3/files?q='{googleDriveFolderID}'+in+parents&fields=files(id,name)&orderBy=name&key={googleAPIKey}";
+        // form url that retrieves file names & IDs in the Google Drive folder
+        string fileListUrl = $"https://www.googleapis.com/drive/v3/files?q='{googleDriveFolderID}'+in+parents&fields=files(id,name)&orderBy={orderSessionsBy}&key={googleAPIKey}";
+
+        // make GET request
         UnityWebRequest www = UnityWebRequest.Get(fileListUrl);
         yield return www.SendWebRequest();
 

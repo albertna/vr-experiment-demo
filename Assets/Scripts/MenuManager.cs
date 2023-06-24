@@ -25,6 +25,10 @@ public class MenuManager : MonoBehaviour
         Refresh();
     }
 
+    // Fetch session files list and populate menu with session select buttons
+    //
+    // Note: No need to refresh after modifying session files since download links are static,
+    // but do refresh after renaming/adding files
     public void Refresh()
     {
         StartCoroutine(RefreshCoroutine());
@@ -47,10 +51,19 @@ public class MenuManager : MonoBehaviour
         // populate menu with session select buttons
         foreach (var fileLink in fileLinks)
         {
+            // instantiate button
+            // Note: sessionSelectButtonPrefab should already have tag "SessionSelectButton"
             GameObject button = Instantiate(sessionSelectButtonPrefab, menuModal);
+
+            // display session name as button text
             button.GetComponentInChildren<Text>().text = fileLink.Key;
+
+            // add button click listener
             button.GetComponent<Button>().onClick.AddListener(() =>
             {
+                // disable all session select buttons to prevent multiclicks
+                EnableSessionSelectButtons(false);
+                // start clicked session
                 GetComponent<SessionManager>().StartSession(fileLink.Value);
             });
         }
@@ -86,5 +99,14 @@ public class MenuManager : MonoBehaviour
         }
     }
 
-
+    public void EnableSessionSelectButtons(bool flag)
+    {
+        foreach (Transform child in menuModal)
+        {
+            if (child.tag == "SessionSelectButton")
+            {
+                child.GetComponent<Button>().interactable = flag;
+            }
+        }
+    }
 }

@@ -35,19 +35,18 @@ public class SessionManager : MonoBehaviour
 
     IEnumerator StartSessionFromStringCoroutine(string sessionFileCSVString)
     {
+        // clear object spawning area
         foreach (Transform child in experimentObjectsParent)
         {
             Destroy(child.gameObject);
         }
 
+        // parse CSV string and do steps
         var session = CSVParser.LoadFromString(sessionFileCSVString);
-
         foreach (var row in session)
         {
-            // do nothing if on first row
-            if (row[0] == "#") continue;
-            // otherwise parse relevant fields
-            else
+            // if not on header row, parse relevant fields
+            if (row[0] != "#")
             {
                 string objName = row[1];
                 float distance = float.Parse(row[2]);
@@ -61,8 +60,12 @@ public class SessionManager : MonoBehaviour
                 yield return new WaitForSeconds(duration);
             }
         }
+
+        // enable all session select buttons afterwards
+        GetComponent<MenuManager>().EnableSessionSelectButtons(true);
     }
 
+    // Spawn object with given parameters at random position with given distance from separation line
     void DoSessionStep(string objName, float distance, float scale, string color)
     {
         // instantiate object

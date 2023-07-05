@@ -36,10 +36,7 @@ public class SessionManager : MonoBehaviour
     IEnumerator StartSessionFromStringCoroutine(string sessionFileCSVString)
     {
         // clear object spawning area
-        foreach (Transform child in experimentObjectsParent)
-        {
-            Destroy(child.gameObject);
-        }
+        ClearExperimentObjects();
 
         // parse CSV string and do steps
         var session = CSVParser.LoadFromString(sessionFileCSVString);
@@ -49,10 +46,10 @@ public class SessionManager : MonoBehaviour
             if (row[0] != "#")
             {
                 string objName = row[1];
-                float distance = float.Parse(row[2]);
-                float scale = float.Parse(row[3]);
+                float distance = float.TryParse(row[2], out distance) ? distance : 0;
+                float scale = float.TryParse(row[3], out scale) ? scale : 1;
                 string color = row[4];
-                float duration = float.Parse(row[5]);
+                float duration = float.TryParse(row[5], out duration) ? duration : 0;
 
                 DoSessionStep(objName, distance, scale, color);
 
@@ -68,6 +65,13 @@ public class SessionManager : MonoBehaviour
     // Spawn object with given parameters at random position with given distance from separation line
     void DoSessionStep(string objName, float distance, float scale, string color)
     {
+        // clear all current objects if CLEARALL is given
+        if (objName == "CLEARALL")
+        {
+            ClearExperimentObjects();
+            return;
+        }
+
         // instantiate object
         GameObject obj = Instantiate(Resources.Load<GameObject>($"Objects/{objName}"), experimentObjectsParent);
 
@@ -82,5 +86,14 @@ public class SessionManager : MonoBehaviour
 
         // set color material
         obj.GetComponent<Renderer>().material = Resources.Load<Material>($"Materials/{color}");
+    }
+
+    // Clear all spawned objects under experimentObjectsParent
+    void ClearExperimentObjects()
+    {
+        foreach (Transform child in experimentObjectsParent)
+        {
+            Destroy(child.gameObject);
+        }
     }
 }

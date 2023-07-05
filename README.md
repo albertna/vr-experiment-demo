@@ -1,6 +1,6 @@
 # vr-experiment-demo
 
-A demo on basic ideas for creating VR experiments in Unity. To run this project, clone the repo and open it in Unity Hub. It will prompt you to install the right version of Unity Editor.
+A demo on basic ideas for creating VR experiments in Unity. To run this project, clone the repo and open it in [Unity Hub](https://unity.com/download). It will prompt you to install the right version of Unity Editor.
 
 Designed to run on Meta Quest 2s.
 
